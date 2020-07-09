@@ -5,21 +5,35 @@ export default class information extends Component {
   userData;
   constructor(props) {
     super(props);
-    this.onChangeName = this.onChangeName.bind(this);
-    this.onChangeAddress = this.onChangeAddress.bind(this);
-    this.onChangeGroup = this.onChangeGroup.bind(this);
+    this.onChangeField = this.onChangeField.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
+      users: [],
       name: "",
       address: "",
-      group: "",
+      group: ""
     };
   }
 
+  //React life cycle
+  componentDidMount() {
+    if (localStorage.getItem("allUsers")) {
+      const userData = JSON.parse(localStorage.getItem("allUsers"));
+      this.setState({
+        users: [...userData.users]
+      });
+    }
+  }
+
   // Form events
-  onChangeName(el) {
-    this.setState({ name: el.target.value });
+
+  // TODO: Move this into one OnChange Function
+  onChangeField(el) {
+    const { target } = el;
+    const { value, name } = target;
+
+    this.setState({ [name]: value });
   }
 
   onChangeAddress(el) {
@@ -31,85 +45,82 @@ export default class information extends Component {
   }
   onSubmit(el) {
     el.preventDefault();
+
+    const { name, address, group, users } = this.state;
+    console.log(users);
+    const userArr = [];
+    const newUser = {
+      name,
+      address,
+      group
+    };
+    userArr.push(...users, newUser);
+    const allUsers = {
+      users: userArr
+    };
+    console.log(allUsers);
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
     this.setState({
       name: "",
       address: "",
-      group: "",
+      group: ""
     });
   }
-  //React life cycle
-  componentDidMount() {
-    this.userData = JSON.parse(localStorage.getItem("user"));
-
-    if (localStorage.getItem("user")) {
-      this.setState({
-        name: this.userData.name,
-        address: this.userData.address,
-        group: this.userData.group,
-      });
-    } else {
-      this.setState({
-        name: "",
-        address: "",
-        group: "",
-      });
-    }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    localStorage.setItem("user", JSON.stringify(nextState));
-  }
   render() {
+    const storage = localStorage.getItem("user");
     return (
       <div className="container">
         <div className="row">
           <div className="col-md-7">
             <h1 className="text-left">Group One</h1>
             <table className="table">
-                <thead>
+              <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Group</th>
-                    <th>        </th>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Group</th>
+                  <th> </th>
                 </tr>
-                </thead>
-                <tbody>
+              </thead>
+              <tbody>
                 <tr>
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td> 
+                  <td />
+                  <td> </td>
+                  <td> </td>
+                  <td>
                     <button class="button button4">Edit</button>
                     <button class="button button4">Remove</button>
                     <button class="button button4">Switch</button>
-                    </td>
+                  </td>
                 </tr>
-                </tbody>
+              </tbody>
             </table>
 
-            <h1 className="text-left" id="">Group Two</h1>
+            <h1 className="text-left" id="">
+              Group Two
+            </h1>
             <table className="table">
-                <thead>
+              <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Group</th>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Group</th>
                 </tr>
-                </thead>
-                <tbody>
+              </thead>
+              <tbody>
                 <tr>
-                    <td> </td>
-                    <td> </td>
-                    <td> </td>
-                    <td> 
+                  <td> </td>
+                  <td> </td>
+                  <td> </td>
+                  <td>
                     <button class="button button4">Edit</button>
                     <button class="button button4">Remove</button>
                     <button class="button button4">Switch</button>
-                    </td>
+                  </td>
                 </tr>
-                </tbody>
-            </table>       
+              </tbody>
+            </table>
           </div>
           <form className="col-md-5" onSubmit={this.onSubmit}>
             <div className="row">
@@ -117,10 +128,10 @@ export default class information extends Component {
                 <h3 className="text-left">Get Details</h3>
               </div>
               <div className="col-md-6">
-                <span className="glyphicon glyphicon-pencil"></span>
+                <span className="glyphicon glyphicon-pencil" />
               </div>
             </div>
-            <hr/>
+            <hr />
             {/* make another column for textbox and label */}
             <div className="row">
               <label className="label col-md-2 control-label">Name </label>
@@ -128,8 +139,9 @@ export default class information extends Component {
                 <input
                   type="text"
                   className="form-control"
+                  name="name"
                   value={this.state.name}
-                  onChange={this.onChangeName}
+                  onChange={this.onChangeField}
                   placeholder="Name"
                 />
               </div>
@@ -140,8 +152,9 @@ export default class information extends Component {
                 <input
                   type="text"
                   className="form-control"
+                  name="address"
                   value={this.state.address}
-                  onChange={this.onChangeAddress}
+                  onChange={this.onChangeField}
                   placeholder="Address"
                 />
               </div>
@@ -149,14 +162,22 @@ export default class information extends Component {
             <div className="row">
               <label className="label col-md-2 control-label">Group </label>
               <div className="col-md-10">
-                <select className="form-control" value={this.state.group}
-                  onChange={this.onChangeGroup}>
+                <select
+                  className="form-control"
+                  // value={this.state.group}
+                  name="group"
+                  onChange={this.onChangeField}
+                >
                   <option value="one">Group 1</option>
                   <option value="two">Group 2</option>
                 </select>
               </div>
-              <button className="btn btn-reset" type="reset" value="Reset">Submit</button>
-              <button className="btn btn-submit" type="submit" value="Submit">Reset</button>
+              <button className="btn btn-reset" type="submit" value="Reset">
+                Submit
+              </button>
+              <button className="btn btn-submit" type="reset" value="Submit">
+                Reset
+              </button>
             </div>
           </form>
         </div>
