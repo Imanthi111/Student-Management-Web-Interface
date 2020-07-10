@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-
+import isEmpty from "lodash/isEmpty";
 import "./getDetails.css";
 export default class information extends Component {
   userData;
+  groupOne;
+  groupTwo;
   constructor(props) {
     super(props);
     this.onChangeField = this.onChangeField.bind(this);
@@ -15,16 +17,15 @@ export default class information extends Component {
       group: ""
     };
   }
-
   //React life cycle
-  componentDidMount() {
+  /* componentDidMount() {
     if (localStorage.getItem("allUsers")) {
       const userData = JSON.parse(localStorage.getItem("allUsers"));
       this.setState({
         users: [...userData.users]
       });
     }
-  }
+  } */
 
   // Form events
 
@@ -46,55 +47,86 @@ export default class information extends Component {
   onSubmit(el) {
     el.preventDefault();
 
-    const { name, address, group, users } = this.state;
-    console.log(users);
-    const userArr = [];
+    const { name, address, group } = this.state;
+    //  console.log(users);
+    //  const userArr = [];
     const newUser = {
       name,
       address,
       group
     };
-    userArr.push(...users, newUser);
-    const allUsers = {
+    //arr.push(...users, newUser);
+
+    this.setState(prevState => ({
+      users: [...prevState.users, newUser]
+    }));
+    /* const allUsers = {
       users: userArr
     };
     console.log(allUsers);
 
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    localStorage.setItem("allUsers", JSON.stringify(allUsers)); */
     this.setState({
       name: "",
       address: "",
       group: ""
     });
   }
+
+  setGroupRows = id => {
+    const { users } = this.state;
+    if (id === 1 && !isEmpty(users)) {
+      const goupOne = users.map(item => {
+        if (item.group === "one") {
+          return (
+            <tr>
+              <td>{item.name} </td>
+              <td>{item.address} </td>
+              <td>{item.group} </td>
+              <td>
+                <button class="button button4">Edit</button>
+                <button class="button button4">Remove</button>
+                <button class="button button4">Switch</button>
+              </td>
+            </tr>
+          );
+        }
+        return "";
+      });
+      return goupOne;
+    } else {
+      const groupTwo = users.map(item => {
+        if (item.group === "two") {
+          return (
+            <tr>
+              <td>{item.name} </td>
+              <td>{item.address} </td>
+              <td>{item.group} </td>
+              <td>
+                <button class="button button4">Edit</button>
+                <button class="button button4">Remove</button>
+                <button class="button button4">Switch</button>
+              </td>
+            </tr>
+          );
+        }
+        return "";
+      });
+      return groupTwo;
+    }
+  };
+
   render() {
-    const storage = localStorage.getItem("user");
+    // const storage = localStorage.getItem("user");
+    const { users } = this.state;
     return (
       <div className="container">
         <div className="row">
           <div className="col-md-7">
             <h1 className="text-left">Group One</h1>
             <table className="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Address</th>
-                  <th>Group</th>
-                  <th> </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td />
-                  <td> </td>
-                  <td> </td>
-                  <td>
-                    <button class="button button4">Edit</button>
-                    <button class="button button4">Remove</button>
-                    <button class="button button4">Switch</button>
-                  </td>
-                </tr>
-              </tbody>
+              <thead />
+              <tbody>{this.setGroupRows(1)}</tbody>
             </table>
 
             <h1 className="text-left" id="">
@@ -108,18 +140,7 @@ export default class information extends Component {
                   <th>Group</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                  <td>
-                    <button class="button button4">Edit</button>
-                    <button class="button button4">Remove</button>
-                    <button class="button button4">Switch</button>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody>{this.setGroupRows(2)}</tbody>
             </table>
           </div>
           <form className="col-md-5" onSubmit={this.onSubmit}>
